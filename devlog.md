@@ -1,0 +1,2 @@
+[05/07] [17:45]
+I have just finished reading the instructions and am starting to plan how I will implement the project. I think the most important thing to do at the beggining is to create the basic structure / skeleton of the project and when everything is working I will start to add more features, so I'll start by creating a simple program that can read the input file and print the data to the console and move on from there.

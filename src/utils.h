@@ -4,6 +4,10 @@
 #include <stdint.h>
 
 /**
+ * Utility functions used throughout the project
+ */
+
+/**
  * Check if the system is big endian
  * @return  1 if the system is big endian, 0 otherwise
  */ 
@@ -23,4 +27,4 @@ uint64_t reverse_bytes(uint64_t x);
  */ 
 uint64_t host_to_be64(uint64_t x);
 
-#endif
+#endif /* UTILS_H */

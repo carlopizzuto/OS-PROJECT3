@@ -6,3 +6,6 @@ I have just finished creating the basic structure of the project and I am now st
 
 [05/08] [13:00]
 Today I plan on finishing the `insert` command, which implies that I need to work on the b-tree implementation. I'll start by creating the b-tree structure and then I will implement the functions for the other commands.
+
+[05/08] [14:25]
+I have just finished the restructuring of the project. I created constants and utils files and modified the Makefile to handle the new structure and it still works. Later on today I will continue working on the `insert` command and hopefully finish a basic b-tree implementation by tonight.

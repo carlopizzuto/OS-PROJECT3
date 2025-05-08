@@ -3,3 +3,6 @@ I have just finished reading the instructions and am starting to plan how I will
 
 [05/08] [1:00]
 I have just finished creating the basic structure of the project and I am now starting to implement the functions. I started with the `create` command and fully implemented it. I also started on the `insert` command but I haven't finished it yet. I'm also starting the process of restructuring my project by splitting the b-tree and io functions from the main file, as well as the constants and other helper functions.
+
+[05/08] [13:00]
+Today I plan on finishing the `insert` command, which implies that I need to work on the b-tree implementation. I'll start by creating the b-tree structure and then I will implement the functions for the other commands.

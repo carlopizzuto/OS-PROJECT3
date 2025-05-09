@@ -9,3 +9,6 @@ Today I plan on finishing the `insert` command, which implies that I need to wor
 
 [05/08] [14:25]
 I have just finished the restructuring of the project. I created constants and utils files and modified the Makefile to handle the new structure and it still works. Later on today I will continue working on the `insert` command and hopefully finish a basic b-tree implementation by tonight.
+
+[05/08] [22:30]
+I plan on having a quick dev session and see if I can finish the `insert` command and start on the `search` command. 

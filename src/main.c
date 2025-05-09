@@ -6,6 +6,7 @@
 
 #include "io.h"
 #include "utils.h"
+#include "btree.h"
 
 #define BLOCK_SIZE 512
 
@@ -29,22 +30,77 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
 
+        // check if index file exists
+        if (io_file_exists(index_file_path)) {
+            fprintf(stderr, "Error: Index file already exists\n");
+            exit(EXIT_FAILURE);
+        }
+
         // create index file
-        int result = create_index_file(index_file_path);
-        if (result != SUCCESS) {
+        BTree *tree = bt_create(index_file_path);
+        if (tree == NULL) {
             fprintf(stderr, "Error: Failed to create index file\n");
             exit(EXIT_FAILURE);
         }
 
         // print success message
         printf("index file created successfully\n");
+        bt_close(tree);
     }
     else if (strcmp(command, "insert") == 0) {
         if (argc != 5) {
             fprintf(stderr, "Usage: ./main insert <index_file> <key> <value>\n");
             exit(EXIT_FAILURE);
         }
-        printf("inserting data into index file...\n");
+        printf("checking if index file exists...\n");
+        if (!io_file_exists(index_file_path)) {
+            fprintf(stderr, "Error: Index file does not exist\n");
+            exit(EXIT_FAILURE);
+        }
+        printf("index file exists\n");
+
+        printf("opening b-tree...\n");
+        BTree *tree = bt_open(index_file_path);
+        if (tree == NULL) {
+            fprintf(stderr, "Error: Failed to open b-tree\n");
+            exit(EXIT_FAILURE);
+        }
+        printf("b-tree opened\n");
+
+        uint64_t key = strtoull(argv[3], NULL, 10);
+        uint64_t value = strtoull(argv[4], NULL, 10);
+        
+        printf("inserting data into b-tree...\n");
+        int result = bt_insert(tree, key, value);
+        if (result != SUCCESS) {
+            fprintf(stderr, "Error: Failed to insert data into b-tree\n");
+            bt_close(tree);
+            exit(EXIT_FAILURE);
+        }
+
+        printf("data inserted into b-tree\n");
+        bt_close(tree);
+    }
+    else if (strcmp(command, "search") == 0) {
+        if (argc != 4) {
+            fprintf(stderr, "Usage: ./main search <index_file> <key>\n");
+            exit(EXIT_FAILURE);
+        }
+        printf("checking if index file exists...\n");
+        if (!io_file_exists(index_file_path)) {
+            fprintf(stderr, "Error: Index file does not exist\n");
+            exit(EXIT_FAILURE);
+        }
+        printf("index file exists\n");
+
+        printf("opening b-tree...\n");
+        BTree *tree = bt_open(index_file_path);
+        if (tree == NULL) {
+            fprintf(stderr, "Error: Failed to open b-tree\n");
+            exit(EXIT_FAILURE);
+        }
+        printf("b-tree opened\n");
+        
         
     }
     else if (strcmp(command, "search") == 0) {

@@ -12,3 +12,6 @@ I have just finished the restructuring of the project. I created constants and u
 
 [05/08] [22:30]
 I plan on having a quick dev session and see if I can finish the `insert` command and start on the `search` command. 
+
+[05/09] [02:00]
+I have just finished the `insert` command. The B-tree is working as expected, splitting and inserting nodes like a B-tree should. The only thing missing is to fill the 'ghost' data (after split) with 0's, as it can be confusing to debug. Tomorrow I'll start with the `search` command with I don't think will take long, and then move on to the next ones.

@@ -5,7 +5,7 @@ CC = gcc
 CFLAGS = -Wall
 
 # Source files
-SRC = src/main.c src/io.c src/utils.c
+SRC = src/main.c src/utils.c src/io.c src/btree.c
 
 # Object files
 OBJ = $(SRC:.c=.o)

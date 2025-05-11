@@ -18,3 +18,6 @@ I have just finished the `insert` command. The B-tree is working as expected, sp
 
 [05/10] [22:50]
 Today I plan on having a quick dev session to format / comment the code and see if there are any logical errors. If I have time I'll also start the search command.
+
+[05/11] [1:00]
+I was adding some comments and removing bad code when I came across a bug in the split mechanism, the parent id of the original root was not being updated in the index file, so I fixed it. I also made some changes to the `create` command to make it more understandable structure wise. I may do some other small changes, but right now the b-tree is working as expected and tomorrow I'll start on the `search` command.

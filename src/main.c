@@ -30,12 +30,6 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
 
-        // check if index file exists
-        if (io_file_exists(index_file_path)) {
-            fprintf(stderr, "Error: Index file already exists\n");
-            exit(EXIT_FAILURE);
-        }
-
         // create index file
         BTree *tree = bt_create(index_file_path);
         if (tree == NULL) {
@@ -45,6 +39,7 @@ int main(int argc, char *argv[]) {
 
         // print success message
         printf("index file created successfully\n");
+        // close index file
         bt_close(tree);
     }
     else if (strcmp(command, "insert") == 0) {
@@ -100,16 +95,6 @@ int main(int argc, char *argv[]) {
             exit(EXIT_FAILURE);
         }
         printf("b-tree opened\n");
-        
-        
-    }
-    else if (strcmp(command, "search") == 0) {
-        if (argc != 5) {
-            fprintf(stderr, "Usage: ./main search <index_file> <key>\n");
-            exit(EXIT_FAILURE);
-        }
-        printf("searching for data in index file...\n");
-
     }
     else if (strcmp(command, "load") == 0) {
         if (argc != 4) {

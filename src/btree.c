@@ -79,10 +79,7 @@ static void insert_nonfull(BTree *t, uint64_t node_id, uint64_t key, uint64_t va
 
 BTree* bt_create(const char *filename) {
     // check if file exists
-    if (io_file_exists(filename)) {
-        fprintf(stderr, "Error: Index file already exists\n");
-        exit(EXIT_FAILURE);
-    }
+    if (io_file_exists(filename)) die("file already exists");
 
     // allocate memory for the BTree structure
     BTree *t = calloc(1, sizeof(*t));
@@ -102,7 +99,7 @@ BTree* bt_create(const char *filename) {
     // create empty root node
     BTNode root = {0};
     root.block_id = 1;
-    root.parent_id = 0; // Root has no parent
+    root.parent_id = 0; // root has no parent
     root.n = 0;
     // write the root node
     write_node(t, 1, &root);
@@ -115,6 +112,9 @@ BTree* bt_open(const char *filename) {
     // allocate memory for the BTree structure
     BTree *t = calloc(1, sizeof(*t));
     if (!t) die("calloc");
+
+    // check if file exists
+    if (!io_file_exists(filename)) die("file does not exist");
 
     // open the file for reading and writing
     t->fd = io_open(filename, O_RDWR);
@@ -232,6 +232,10 @@ static void split_child(BTree *t, uint64_t parent_id, int idx) {
     parent.values[idx] = child.values[DEGREE-1];
     parent.n++;
 
+    // zero out the moved keys/values in the child
+    child.keys[DEGREE-1] = 0;
+    child.values[DEGREE-1] = 0;
+
     // write back
     write_node(t, child_id, &child);
     write_node(t, sib_id, &sibling);
@@ -243,7 +247,7 @@ static void insert_nonfull(BTree *t, uint64_t node_id, uint64_t key, uint64_t va
     BTNode node;
     // read node
     read_node(t, node_id, &node);
-    
+
     // set i to last key index
     int i = node.n - 1;
 

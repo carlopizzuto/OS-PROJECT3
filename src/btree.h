@@ -50,4 +50,10 @@ int bt_insert(BTree *tree, uint64_t key, uint64_t value);
  */
 int bt_search(BTree *tree, uint64_t key, uint64_t *value);
 
+/**
+ * Print the structure of the B-tree.
+ * @param tree      The BTree handle.
+ */
+void bt_print(BTree *tree);
+
 #endif /* BTREE_H */

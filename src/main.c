@@ -114,12 +114,24 @@ int main(int argc, char *argv[]) {
         
     }
     else if (strcmp(command, "print") == 0) {
+        // check if print is called with extra arguments
         if (argc != 3) {
             fprintf(stderr, "Usage: ./main print <index_file>\n");
             exit(EXIT_FAILURE);
         }
-        printf("printing data from index file...\n");
         
+        // open the b-tree
+        BTree *tree = bt_open(index_file_path);
+        if (tree == NULL) {
+            fprintf(stderr, "Error: Failed to open b-tree\n");
+            exit(EXIT_FAILURE);
+        }
+        
+        // print the b-tree structure
+        bt_print(tree);
+        
+        // close the b-tree
+        bt_close(tree);
     }
     else if (strcmp(command, "extract") == 0) {
         if (argc != 4) {

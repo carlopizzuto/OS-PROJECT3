@@ -24,7 +24,7 @@ typedef struct {
     uint8_t  pad[BLOCK_SIZE - (8 + 8 + 8 + MAX_KEYS*8 + MAX_KEYS*8 + MAX_CHILDREN*8)]; // padding
 } BTNode;
 
-// helpers to read/write nodes
+// helper to read node from file
 static void read_node(BTree *t, uint64_t id, BTNode *node) {
     if (io_read_node(t->fd, id, node) < 0) die("io_read_node");
 
@@ -43,6 +43,7 @@ static void read_node(BTree *t, uint64_t id, BTNode *node) {
     }
 }
 
+// helper to write node to file
 static void write_node(BTree *t, uint64_t id, BTNode *node) {
     // create a copy of the node to be modified for storage
     BTNode node_be = *node;
@@ -64,7 +65,7 @@ static void write_node(BTree *t, uint64_t id, BTNode *node) {
     if (io_write_node(t->fd, id, &node_be) < 0) die("io_write_node");
 }
 
-// allocate a fresh block
+// helper to allocate a fresh block
 static uint64_t alloc_node(BTree *t) {
     // update the header to point to the next free block
     uint64_t id = t->hdr.next_free_block++;
@@ -75,6 +76,7 @@ static uint64_t alloc_node(BTree *t) {
 // forward declarations
 static void split_child(BTree *t, uint64_t parent_id, int idx);
 static void insert_nonfull(BTree *t, uint64_t node_id, uint64_t key, uint64_t value);
+static void print_node(BTree *t, uint64_t node_id, int level);
 
 
 BTree* bt_create(const char *filename) {
@@ -214,6 +216,15 @@ int bt_search(BTree *t, uint64_t key, uint64_t *value) {
     }
 }
 
+void bt_print(BTree *t) {
+    printf("B-Tree Root Block: %llu\n", (unsigned long long)t->hdr.root_block);
+    printf("B-Tree Next Free Block: %llu\n", (unsigned long long)t->hdr.next_free_block);
+    printf("----------------------------\n");
+    
+    // start printing from the root
+    print_node(t, t->hdr.root_block, 0);
+}
+
 static void split_child(BTree *t, uint64_t parent_id, int idx) {
     // declare nodes
     BTNode parent, child, sibling;
@@ -320,5 +331,48 @@ static void insert_nonfull(BTree *t, uint64_t node_id, uint64_t key, uint64_t va
         }
         // recursively insert into the appropriate child
         insert_nonfull(t, node.children[i], key, value);
+    }
+}
+
+static void print_node(BTree *t, uint64_t node_id, int level) {
+    // load current node
+    BTNode node;
+    read_node(t, node_id, &node);
+    
+    // print indentation based on level
+    for (int i = 0; i < level; i++) {
+        printf("  ");
+    }
+
+    if (level > 0) {
+        printf("└── ");
+    }
+
+    printf("L%d ", level);
+    
+    // print node information
+    printf("Node[%llu] (parent=%llu, n=%llu): ", 
+           (unsigned long long)node.block_id,
+           (unsigned long long)node.parent_id,
+           (unsigned long long)node.n);
+    
+    // print keys and values
+    for (int i = 0; i < node.n; i++) {
+        printf("(%llu,%llu) ", 
+               (unsigned long long)node.keys[i], 
+               (unsigned long long)node.values[i]);
+    }
+    printf("\n");
+    
+    // if node has children
+    if (node.children[0] != 0) {
+        // for each child
+        for (int i = 0; i <= node.n; i++) {
+            // if child exists
+            if (node.children[i] != 0) {
+                // recursively print child
+                print_node(t, node.children[i], level + 1);
+            }
+        }
     }
 }

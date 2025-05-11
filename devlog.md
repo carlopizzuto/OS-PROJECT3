@@ -15,3 +15,6 @@ I plan on having a quick dev session and see if I can finish the `insert` comman
 
 [05/09] [02:00]
 I have just finished the `insert` command. The B-tree is working as expected, splitting and inserting nodes like a B-tree should. The only thing missing is to fill the 'ghost' data (after split) with 0's, as it can be confusing to debug. Tomorrow I'll start with the `search` command with I don't think will take long, and then move on to the next ones.
+
+[05/10] [22:50]
+Today I plan on having a quick dev session to format / comment the code and see if there are any logical errors. If I have time I'll also start the search command.

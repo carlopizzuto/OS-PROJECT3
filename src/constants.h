@@ -47,5 +47,6 @@ typedef struct {
 #define SUCCESS             0
 #define ERROR_FILE_EXISTS   1
 #define ERROR_IO            2
+#define ERROR_KEY_NOT_FOUND 3
 
 #endif /* CONSTANTS_H */

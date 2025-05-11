@@ -41,4 +41,13 @@ void bt_close(BTree *tree);
  */
 int bt_insert(BTree *tree, uint64_t key, uint64_t value);
 
+/**
+ * Search for a key in the B-tree.
+ * @param tree      The BTree handle.
+ * @param key       64-bit key to search for.
+ * @param value     Pointer to store the value associated with the key if found.
+ * @return          SUCCESS if key is found, non-zero otherwise.
+ */
+int bt_search(BTree *tree, uint64_t key, uint64_t *value);
+
 #endif /* BTREE_H */

@@ -180,6 +180,40 @@ int bt_insert(BTree *t, uint64_t key, uint64_t value) {
     return 0;
 }
 
+int bt_search(BTree *t, uint64_t key, uint64_t *value) {
+    // start from the root node
+    BTNode node;
+    uint64_t current_node_id = t->hdr.root_block;
+    
+    while (1) {
+        // read the current node
+        read_node(t, current_node_id, &node);
+
+        // search for key in the current node
+        int i = 0;
+        while (i < node.n && key > node.keys[i]) {
+            i++;
+        }
+
+        // check if we found the key
+        if (i < node.n && key == node.keys[i]) {
+            // if value pointer is provided, store the value
+            if (value != NULL) {
+                *value = node.values[i];
+            }
+            return SUCCESS; // key found
+        }
+
+        // if current node has no children
+        if (node.children[0] == 0) { // it is a leaf node 
+            return ERROR_KEY_NOT_FOUND; // key not found
+        }
+
+        // continue search in the appropriate child
+        current_node_id = node.children[i];
+    }
+}
+
 static void split_child(BTree *t, uint64_t parent_id, int idx) {
     // declare nodes
     BTNode parent, child, sibling;
@@ -243,39 +277,48 @@ static void split_child(BTree *t, uint64_t parent_id, int idx) {
 }
 
 static void insert_nonfull(BTree *t, uint64_t node_id, uint64_t key, uint64_t value) {
-    // declare node
+    // load the initial node
     BTNode node;
-    // read node
     read_node(t, node_id, &node);
 
     // set i to last key index
     int i = node.n - 1;
 
-    // if leaf node
-    if (node.children[0] == 0) { // this is a leaf node
-        // shift and insert key and value
+    // if node is leaf
+    if (node.children[0] == 0) {
+        // shift keys and values to make room for new entry
         while (i >= 0 && key < node.keys[i]) {
             node.keys[i+1] = node.keys[i];
             node.values[i+1] = node.values[i];
             i--;
         }
+
+        // insert the new key and value
         node.keys[i+1] = key;
         node.values[i+1] = value;
         node.n++;
+
+        // write back the updated node
         write_node(t, node_id, &node);
-    } else {
-        // find child
+    } else { // node has children
+        // find the child to descend into
         while (i >= 0 && key < node.keys[i]) i--;
         i++;
-        // load child
+
+        // load the child node
         BTNode child;
         read_node(t, node.children[i], &child);
+
+        // if child is full
         if (child.n == MAX_KEYS) {
+            // split it
             split_child(t, node_id, i);
-            // decide which of the two to descend
+
+            // reload node after split and determine which child to descend into
             read_node(t, node_id, &node);
             if (key > node.keys[i]) i++;
         }
+        // recursively insert into the appropriate child
         insert_nonfull(t, node.children[i], key, value);
     }
 }

@@ -21,3 +21,6 @@ Today I plan on having a quick dev session to format / comment the code and see 
 
 [05/11] [1:00]
 I was adding some comments and removing bad code when I came across a bug in the split mechanism, the parent id of the original root was not being updated in the index file, so I fixed it. I also made some changes to the `create` command to make it more understandable structure wise. I may do some other small changes, but right now the b-tree is working as expected and tomorrow I'll start on the `search` command.
+
+[05/11] [17:00]
+I plan on finishing everything today. I'll probably start by implementing the search command and then I'll move on to the `load`, `print` and `extract` commands.

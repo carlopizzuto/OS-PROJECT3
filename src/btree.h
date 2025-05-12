@@ -56,4 +56,12 @@ int bt_search(BTree *tree, uint64_t key, uint64_t *value);
  */
 void bt_print(BTree *tree);
 
+/**
+ * Load key-value pairs from a CSV file into the B-tree.
+ * @param tree      The BTree handle.
+ * @param csv_file  Path to the CSV file containing key-value pairs.
+ * @return          SUCCESS on success, non-zero on failure.
+ */
+int bt_load(BTree *tree, const char *csv_file);
+
 #endif /* BTREE_H */

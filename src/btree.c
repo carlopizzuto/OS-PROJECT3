@@ -216,6 +216,66 @@ int bt_search(BTree *t, uint64_t key, uint64_t *value) {
     }
 }
 
+int bt_load(BTree *t, const char *csv_file) {
+    // open the csv file for reading
+    FILE *file = fopen(csv_file, "r");
+    if (file == NULL) {
+        perror("Error opening CSV file");
+        return -1;
+    }
+
+    // buffer for reading lines from the file
+    char line[1024];
+    int line_count = 0;
+    int success_count = 0;
+
+    // process each line in the csv file
+    while (fgets(line, sizeof(line), file)) {
+        line_count++;
+        
+        // skip empty lines or lines starting with #
+        if (line[0] == '\n' || line[0] == '#') {
+            continue;
+        }
+
+        // parse the csv line for key and value
+        char *token = strtok(line, ",");
+        if (token == NULL) {
+            fprintf(stderr, "Error parsing line %d: Invalid format\n", line_count);
+            continue;
+        }
+
+        // convert the key string to a 64-bit unsigned integer
+        uint64_t key = strtoull(token, NULL, 10);
+        
+        // get the value part of the csv line
+        token = strtok(NULL, ",\n");
+        if (token == NULL) {
+            fprintf(stderr, "Error parsing line %d: Missing value\n", line_count);
+            continue;
+        }
+
+        // convert the value string to a 64-bit unsigned integer
+        uint64_t value = strtoull(token, NULL, 10);
+        
+        // insert the key-value pair into the b-tree
+        int result = bt_insert(t, key, value);
+        if (result != SUCCESS) {
+            fprintf(stderr, "Error inserting key-value pair (%llu, %llu) at line %d\n", 
+                    (unsigned long long)key, (unsigned long long)value, line_count);
+        } else {
+            success_count++;
+        }
+    }
+
+    // close the file when done
+    fclose(file);
+    
+    // print summary and return success
+    printf("Loaded %d key-value pairs from CSV file\n", success_count);
+    return SUCCESS;
+}
+
 void bt_print(BTree *t) {
     printf("B-Tree Root Block: %llu\n", (unsigned long long)t->hdr.root_block);
     printf("B-Tree Next Free Block: %llu\n", (unsigned long long)t->hdr.next_free_block);

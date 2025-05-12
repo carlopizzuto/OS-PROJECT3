@@ -106,12 +106,30 @@ int main(int argc, char *argv[]) {
         bt_close(tree);
     }
     else if (strcmp(command, "load") == 0) {
+        // check if load is called with extra arguments
         if (argc != 4) {
             fprintf(stderr, "Usage: ./main load <index_file> <csv_file>\n");
             exit(EXIT_FAILURE);
         }
-        printf("loading data from index file...\n");
-        
+
+        // open the b-tree
+        BTree *tree = bt_open(index_file_path);
+        if (tree == NULL) {
+            fprintf(stderr, "Error: Failed to open b-tree\n");
+            exit(EXIT_FAILURE);
+        }
+
+        // load the data from the csv file
+        const char *csv_file = argv[3];
+        int result = bt_load(tree, csv_file);
+        if (result != SUCCESS) {
+            fprintf(stderr, "Error: Failed to load data from CSV file\n");
+            bt_close(tree);
+            exit(EXIT_FAILURE);
+        }
+
+        // close the b-tree
+        bt_close(tree);
     }
     else if (strcmp(command, "print") == 0) {
         // check if print is called with extra arguments

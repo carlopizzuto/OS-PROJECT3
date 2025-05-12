@@ -24,3 +24,6 @@ I was adding some comments and removing bad code when I came across a bug in the
 
 [05/11] [17:00]
 I plan on finishing everything today. I'll probably start by implementing the search command and then I'll move on to the `load`, `print` and `extract` commands.
+
+[05/11] [22:15]
+I've just finished implementing all commands. There's still some formatting to do, but I'm happy with the final structure of the code. I'll submit the project now, but may still do some formatting later on. Overall, I'm happy with how the project turned out, I learned a lot about b-trees and file I/O in C and had a lot of fun working on the code.

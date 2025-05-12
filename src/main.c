@@ -158,6 +158,24 @@ int main(int argc, char *argv[]) {
         }
         printf("extracting data from index file...\n");
 
+        // open the b-tree
+        BTree *tree = bt_open(index_file_path);
+        if (tree == NULL) {
+            fprintf(stderr, "Error: Failed to open b-tree\n");
+            exit(EXIT_FAILURE);
+        }
+
+        // extract the data to the csv file
+        const char *csv_file = argv[3];
+        int result = bt_extract(tree, csv_file);
+        if (result != SUCCESS) {
+            fprintf(stderr, "Error: Failed to extract data to CSV file\n");
+            bt_close(tree);
+            exit(EXIT_FAILURE);
+        }
+
+        // close the b-tree
+        bt_close(tree);
     }
     else {
         fprintf(stderr, "Usage: ./main <command> <index_file> [arguments]\n");

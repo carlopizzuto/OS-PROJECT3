@@ -77,6 +77,7 @@ static uint64_t alloc_node(BTree *t) {
 static void split_child(BTree *t, uint64_t parent_id, int idx);
 static void insert_nonfull(BTree *t, uint64_t node_id, uint64_t key, uint64_t value);
 static void print_node(BTree *t, uint64_t node_id, int level);
+static int extract_node(BTree *t, FILE *file, uint64_t node_id, int *pair_count);
 
 
 BTree* bt_create(const char *filename) {
@@ -276,6 +277,32 @@ int bt_load(BTree *t, const char *csv_file) {
     return SUCCESS;
 }
 
+int bt_extract(BTree *t, const char *csv_file) {
+    // open the csv file for writing
+    FILE *file = fopen(csv_file, "w");
+    if (file == NULL) {
+        perror("Error opening CSV file for writing");
+        return -1;
+    }
+
+    // write a header comment
+    fprintf(file, "# Key-value pairs extracted from B-tree\n");
+    fprintf(file, "# Format: key,value\n");
+    
+    // counter for the number of key-value pairs extracted
+    int pair_count = 0;
+
+    // start traversal from the root node
+    int result = extract_node(t, file, t->hdr.root_block, &pair_count);
+
+    // close the file
+    fclose(file);
+
+    // print summary and return success
+    printf("Extracted %d key-value pairs to CSV file\n", pair_count);
+    return result;
+}
+
 void bt_print(BTree *t) {
     printf("B-Tree Root Block: %llu\n", (unsigned long long)t->hdr.root_block);
     printf("B-Tree Next Free Block: %llu\n", (unsigned long long)t->hdr.next_free_block);
@@ -447,4 +474,46 @@ static void print_node(BTree *t, uint64_t node_id, int level) {
             }
         }
     }
+}
+
+static int extract_node(BTree *t, FILE *file, uint64_t node_id, int *pair_count) {
+    // load the current node
+    BTNode node;
+    read_node(t, node_id, &node);
+
+    // if this is a leaf node
+    if (node.children[0] == 0) {
+        // for each key-value pair
+        for (int i = 0; i < node.n; i++) {
+            // write key-value pair to csv file
+            fprintf(file, "%llu,%llu\n", 
+                    (unsigned long long)node.keys[i], 
+                    (unsigned long long)node.values[i]);    
+            (*pair_count)++;
+        }
+        return SUCCESS;
+    }
+
+    // for internal nodes, traverse children and write keys in order
+    for (int i = 0; i < node.n; i++) {
+        // if left child exists
+        if (node.children[i] != 0) {
+            // traverse the left child
+            extract_node(t, file, node.children[i], pair_count);
+        }
+        
+        // write the current key-value pair
+        fprintf(file, "%llu,%llu\n", 
+                (unsigned long long)node.keys[i], 
+                (unsigned long long)node.values[i]);
+        (*pair_count)++;
+    }
+
+    // if rightmost child exists
+    if (node.children[node.n] != 0) {
+        // traverse the rightmost child
+        extract_node(t, file, node.children[node.n], pair_count);
+    }
+
+    return SUCCESS;
 }

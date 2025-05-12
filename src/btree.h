@@ -64,4 +64,12 @@ void bt_print(BTree *tree);
  */
 int bt_load(BTree *tree, const char *csv_file);
 
+/**
+ * Extract all key-value pairs from the B-tree to a CSV file.
+ * @param tree      The BTree handle.
+ * @param csv_file  Path to the CSV file to write key-value pairs to.
+ * @return          SUCCESS on success, non-zero on failure.
+ */
+int bt_extract(BTree *tree, const char *csv_file);
+
 #endif /* BTREE_H */

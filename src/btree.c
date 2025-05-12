@@ -252,10 +252,22 @@ static void split_child(BTree *t, uint64_t parent_id, int idx) {
         child.values[j + DEGREE] = 0;
     }
 
-    // move children if not leaf
-    if (child.children[0] != 0) { // check if it's an internal node
+    // if child has children
+    if (child.children[0] != 0) { 
+        // for each grandchild
         for (int j = 0; j < DEGREE; j++) {
+            // move grandchild
             sibling.children[j] = child.children[j + DEGREE];
+            
+            // if grandchild has children
+            if (sibling.children[j] != 0) {
+                // update the parent pointer of the moved grandchild
+                BTNode moved_child;
+                read_node(t, sibling.children[j], &moved_child);
+                moved_child.parent_id = sib_id;
+                write_node(t, sibling.children[j], &moved_child);
+            }
+            
             // zero out the moved children in the child
             child.children[j + DEGREE] = 0;
         }

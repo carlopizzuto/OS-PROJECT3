@@ -23,7 +23,7 @@
 /**
  * B-tree minimum degree (t)
  */
-#define DEGREE          4
+#define DEGREE          2
 
 /**
  * Maximum keys and children per node
